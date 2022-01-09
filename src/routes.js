@@ -1,4 +1,5 @@
 const loanController = require('./controller/loanController');
+const validator = require('./controller/validator');
 
 module.exports = (app) => {
 
@@ -7,5 +8,9 @@ module.exports = (app) => {
         res.status(200).json("API rodando com sucesso!");
     });
 
-    app.get('/getStateFee', loanController.getStateFee)
+    app.get(
+        '/getAllParcelas/:cpf/:uf/:birthdate/:loanValue/:monthValueToPay',
+        validator.minLoanValue,
+        validator.minInstallmentValue,
+        loanController.getAllInstallments)
 }

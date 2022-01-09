@@ -1,4 +1,4 @@
-const getStateFee = (req, res, next) => {
+const getStateFee = () => {
     const stateFeeConfig = {
         'MG': 1,
         'SP': 0.8,
@@ -6,7 +6,7 @@ const getStateFee = (req, res, next) => {
         'ES': 1.11,
     };
 
-    return res.status(200).json(stateFeeConfig);
+    return stateFeeConfig;
 };
 
 module.exports = getStateFee;

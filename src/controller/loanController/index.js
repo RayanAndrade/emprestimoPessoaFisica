@@ -1,5 +1,5 @@
-const getStateFee = require('./getStateFee');
+const getAllInstallments = require('./getAllInstallments');
 
 module.exports = {
-    getStateFee
+    getAllInstallments
 };
