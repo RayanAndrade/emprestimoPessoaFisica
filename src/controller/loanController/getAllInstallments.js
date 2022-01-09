@@ -1,13 +1,9 @@
 const utils = require('../utils');
 const moment = require('moment');
 
-const getAllInstallments = (req, res, next) => {
+const getAllInstallments = ({loanValue, monthValueToPay, feeTax}) => {
 
     const allInstallments = [];
-    const {loanValue, monthValueToPay, uf} = req.params;
-    
-    const stateFeeDictionary = utils.getStateFee();
-    const feeTax = stateFeeDictionary[uf];
     const now = moment().format('DD/MM/YYYY');
 
     const inicialData = {
@@ -38,14 +34,14 @@ const getAllInstallments = (req, res, next) => {
 
     }
 
-    return res.status(200).json(allInstallments);
+    return allInstallments;
 };
 
 function getInstallment({balanceDue, monthValueToPay, feeTax, now}){
 
     const fee = utils.getFee(balanceDue, feeTax);
     const newBalanceDue = (balanceDue + fee);
-    const installmentValue = (newBalanceDue - monthValueToPay) > monthValueToPay ? monthValueToPay : newBalanceDue;
+    const installmentValue = (newBalanceDue) > monthValueToPay ? monthValueToPay : Number(newBalanceDue.toFixed(2));
     const deadline = moment(now, 'DD/MM/YYYY').add(1, 'month').format('DD/MM/YYYY');
 
     const installment = {

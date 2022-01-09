@@ -9,8 +9,8 @@ module.exports = (app) => {
     });
 
     app.get(
-        '/getAllParcelas/:cpf/:uf/:birthdate/:loanValue/:monthValueToPay',
+        '/getSimulation/:cpf/:uf/:birthdate/:loanValue/:monthValueToPay',
         validator.minLoanValue,
         validator.minInstallmentValue,
-        loanController.getAllInstallments)
+        loanController.getSimulation)
 }

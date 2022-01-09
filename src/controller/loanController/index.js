@@ -1,5 +1,5 @@
-const getAllInstallments = require('./getAllInstallments');
+const getSimulation = require('./getSimulation');
 
 module.exports = {
-    getAllInstallments
+    getSimulation
 };
