@@ -1,7 +1,14 @@
 const express = require('express');
 const app = express();
-require("dotenv").config();
+app.use(function (req, res, next) {
+    // Enabling CORS
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,POST");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, contentType, Content-Type, Accept, Authorization, tokenacesso, tokenEmail");
+    next();
+});
 
+require("dotenv").config();
 app.use(express.json());
 
 const router = require('./src/routes')
