@@ -1,5 +1,6 @@
 const loanController = require('./controller/loanController');
 const validator = require('./controller/validator');
+const loanDb = require('./controller/db/loan');
 
 module.exports = (app) => {
 
@@ -12,5 +13,9 @@ module.exports = (app) => {
         '/getSimulation/:cpf/:uf/:birthdate/:loanValue/:monthValueToPay',
         validator.minLoanValue,
         validator.minInstallmentValue,
-        loanController.getSimulation)
+        loanController.getSimulation
+    );
+    
+    app.post('/saveLoan', loanDb.insertLoan);
+    app.get('/getLoans', loanDb.getLoans)
 }

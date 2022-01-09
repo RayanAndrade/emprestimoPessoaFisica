@@ -16,14 +16,14 @@ const getSimulation = function(req, res, next){
     })
     const totalFeePayed = totalPayment - loanValue;
 
-    const summary = {
+    const summary = [{
         loanValue,
         feeTax,
         monthValueToPay,
         totalMonths,
         totalFeePayed,
         totalPayment
-    };
+    }];
 
     return res.status(200).json({
         summary,

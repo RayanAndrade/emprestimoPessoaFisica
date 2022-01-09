@@ -15,10 +15,10 @@ const LoanForm = () => {
     const [birthdate, setBirthdate] = useState('');
     const [loanValue, setLoanValue] = useState('');
     const [monthValueToPay, setMonthValueToPay] = useState('');
-    const [_summary, setSummary] = useState({});
+    const [_summary, setSummary] = useState([]);
     const [_installments, setInstallments] = useState([]);
 
-    const submit = () => {
+    const getSimulation = () => {
         
         if(cpf && uf && birthdate && loanValue && monthValueToPay){
 
@@ -36,7 +36,7 @@ const LoanForm = () => {
                 if(status === 200){
                     console.log(response.status)
                     const {summary, installments} = response.data;
-                    
+                    console.log(summary, installments)
                     setSummary(summary);
                     setInstallments(installments);
 
@@ -65,6 +65,47 @@ const LoanForm = () => {
                 confirmButtonText: 'Pode deixar!'
             });
         }
+    }
+
+    const sendSimulation = function(){
+        const api = axios.create({
+            baseURL: "https://emprestimo-letalk.herokuapp.com",
+            validateStatus: false
+        });
+
+        api
+        .post(`/saveLoan`,
+            {
+                summary: _summary,
+                installments: _installments
+            }
+        )
+        .then((response) => {
+
+            const {status} = response;
+
+            if(status === 200){
+                
+                Swal.fire({
+                    title: 'Simulação cadastrada com sucesso!',
+                    text: "",
+                    icon: 'success',
+                    confirmButtonText: 'Valeu!'
+                });
+
+                setAprovedSimulation(false);
+            }else{
+
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Ops! Houve um erro ao processar a sua requisição.',
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                });
+
+                setAprovedSimulation(true);
+            }
+        })
     }
 
     return(
@@ -123,7 +164,7 @@ const LoanForm = () => {
                             onChange={e => setMonthValueToPay(e.target.value)}
                         />
 
-                        <button onClick={submit} class="bg-yellow-500 hover:bg-yellow-600 text-base hover:text-lg ease-in duration-100 text-white font-bold py-2 px-4 rounded w-full">
+                        <button onClick={getSimulation} class="bg-yellow-500 hover:bg-yellow-600 text-base hover:text-lg ease-in duration-100 text-white font-bold py-2 px-4 rounded w-full">
                             SIMULAR
                         </button>
                     </div>
@@ -137,11 +178,46 @@ const LoanForm = () => {
                         <div class="h-4/6 w-4/6 mx-auto box-content border bg-white rounded shadow-md px-3 pt-12 pb-3 my-4 space-y-4 text-left">
                             
                             <div class="grid grid-cols-3">
-                                
-                                <div class="p-2">
-                                    <div class="text-slate-400 text-sm font-bold">VALOR REQUERIDO:</div>
-                                    <div class="font-bold text-xl hover:text-2xl ease-in duration-100">$50,00</div>
-                                </div>
+                                    
+                                {
+                                    _summary.map(summary => {
+                                        const {loanValue, feeTax, monthValueToPay, totalMonths, totalFeePayed, totalPayment} = summary;
+    
+                                        return(
+                                            <>
+                                                <div class="p-2">
+                                                    <div class="text-slate-400 text-sm font-bold">VALOR REQUERIDO:</div>
+                                                    <div class="font-bold text-xl hover:text-2xl ease-in duration-100">{fm.from(Number(loanValue), { symbol: 'R$' })}</div>
+                                                </div>
+                                                
+                                                <div class="p-2">
+                                                    <div class="text-slate-400 text-sm font-bold">TAXA DE JUROS</div>
+                                                    <div class="font-bold text-xl hover:text-2xl ease-in duration-100">{feeTax}% ao mês</div>
+                                                </div>
+                                                
+                                                <div class="p-2">
+                                                    <div class="text-slate-400 text-sm font-bold">VALOR DA PARCELA</div>
+                                                    <div class="font-bold text-xl hover:text-2xl ease-in duration-100">{fm.from(Number(monthValueToPay), { symbol: 'R$' })}</div>
+                                                </div>
+                                                
+                                                <div class="p-2">
+                                                    <div class="text-slate-400 text-sm font-bold">TOTAL DE MESES PARA QUITAR</div>
+                                                    <div class="font-bold text-xl hover:text-2xl ease-in duration-100">{totalMonths} MESES</div>
+                                                </div>
+                                                
+                                                <div class="p-2">
+                                                    <div class="text-slate-400 text-sm font-bold">TOTAL DE JUROS</div>
+                                                    <div class="font-bold text-xl hover:text-2xl ease-in duration-100">{fm.from(totalFeePayed, { symbol: 'R$' })}</div>
+                                                </div>
+                                                
+                                                <div class="p-2">
+                                                    <div class="text-slate-400 text-sm font-bold">TOTAL A PAGAR</div>
+                                                    <div class="font-bold text-xl hover:text-2xl ease-in duration-100">{fm.from(totalPayment, { symbol: 'R$' })}</div>
+                                                </div>
+                                            </>
+                                        )
+                                    })
+                                }
                                 
                             </div>
 
@@ -174,7 +250,7 @@ const LoanForm = () => {
                                 </tbody>
                             </table>
 
-                            <button class="bg-green-500 hover:bg-green-700 text-base hover:text-lg ease-in duration-100 text-white font-bold py-2 px-4 rounded w-full">
+                            <button onClick={sendSimulation} class="bg-green-500 hover:bg-green-700 text-base hover:text-lg ease-in duration-100 text-white font-bold py-2 px-4 rounded w-full">
                                 EFETIVAR O EMPRÉSTIMO →
                             </button>
                         </div>
